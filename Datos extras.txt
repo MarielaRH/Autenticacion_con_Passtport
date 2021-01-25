@@ -1,0 +1,77 @@
+Hablemos sobre Estándares de Seguridad y OAuth 2.0
+
+
+
+Share
+Gracias a los estándares de seguridad podemos compartir flujos de autorización y autenticación entre diferentes aplicaciones, es decir, podemos aprender el paso a paso de cómo funcionan estos servicios y aplicarlos para proteger nuestras aplicaciones.
+
+Vamos a analizar el stack de seguridad más utilizado en el mercado por aplicaciones modernas. Si quieres aprender a utilizarlos en proyectos 100% reales puedes tomar el Curso de Autenticación con OAuth de Platzi.
+
+Autenticación vs. Autorización
+Antes de analizar nuestras tecnologías debemos entender las diferencias entre Autenticación y Autorización. Así, podemos entender mucho mejor los objetivos de las tecnologías que vamos a implementar en nuestros proyectos.
+
+Autenticación: Consiste en verificar la identidad de nuestros usuarios, debemos asegurarnos de que existen, a qué partes de nuestro sistema pueden y deberían ingresar, si tienen los permisos adecuados, entre otras cosas. Para este proceso podemos utilizar diferentes mecanismos: formularios de usuario y contraseña, mensajes de texto, envío de URLs por correo electrónico, entre otras.
+
+Autorización: Consiste en definir los permisos y limitaciones de los usuarios que ya pasaron el proceso de autenticación. Esto mismo sucede con nuestras aplicaciones, algunos usuarios pueden tener permisos para escribir, actualizar o eliminar cierto contenido, mientras que otros solo pueden visualizar e interactuar con nuestra aplicación.
+
+Tokens y JWT
+Los JSON Web Tokens (JWT) son un estándar que nos permite representar los permisos o requerimientos de las aplicaciones.
+
+Nuestro servidor concede los permisos para un usuario generando y guardando esta información en tokens. Pero en vez de generar una cookie para almacenar los tokens, los enviamos al cliente o navegador de los usuarios para que el frontend se encargue de hacer peticiones a este o algún otro servidor.
+
+Gracias a los JWT podemos hacer peticiones y recibir la información de los usuarios sin necesidad de verificar la identidad o permisos de los usuarios todo el tiempo. Por su puesto, estos tokens tienen un tiempo de vida limitado. Debemos configurar nuestra aplicación para solo entregar información de los usuarios cuando estos se han autenticado (el servidor a firmado un token especial para ellos) y el tiempo de vida del token todavía es vigente.
+
+Puedes leer un poco más sobre cómo funcionan los JWT en el siguiente artículo de @sergiodxa: Introducción a JSON Web Tokens (JWT) en Platzi.
+
+¡Ahora sí! ¿Qué es OAuth?
+OAuth (Open Authorization, versión 2.0) es un estándar o protocolo que nos permite delegar la autenticación de nuestros usuarios a otros servicios.
+
+El flujo de autorización es el siguiente: Nuestra aplicación redirecciona a los usuarios para pedir permiso y acceder a parte de su información. Si los usuarios aceptan, este servicio nos devuelve un token de acceso que podemos utilizar para consumir la información protegida de nuestros usuarios.
+
+Muchas compañías y servicios populares (Google, Twitter, Github, Spotify y muchos otros) aprovechan muy bien este tipo de mecanismos para compartir sus APIs con otras aplicaciones o incluso para otros proyectos de las mismas marcas.
+
+Artículo recomendado: Una introducción a OAuth 2.0.
+
+Conclusiones
+¿Qué tipo de seguridad podemos utilizar en SPAs? ¿¡Esto sí es seguro de verdad!? ¿Cuáles librerías utilizamos para implementar OAuth? ¿Qué hay de Open ID Connect!?
+
+No hay problema, todas estas preguntas (y todas las que tengas) las puedes resolver tomando el Curso de Autenticación con OAuth con nuestro profesor @glrodasz, ingeniero en Auth0 y coorganizador de muchas comunidades como Medellín CSS.
+
+========================================================================================================================================================================================================================================================
+A tu autenticación le hace falta verificación
+
+¿Sabías que tu aplicación con Node.js, esa que tienes con login de usuarios no es suficientemente segura? ¡Pero espera, no te vayas! Hay un middleware muy bueno que te ayudará a mejorarlo.
+
+¿Sabes qué es un middleware?
+Es un código que ayuda a una aplicación para interactuar o comunicarse con otras aplicaciones, paquetes de programas, redes, hardware o sistemas operativos.
+
+Ahora, ¿cómo puedo mejorar la seguridad de mi login de usuarios?
+Para eso ha llegado a tu salvación Passport.js, un middleware de autenticación para Node. Está diseñado para servir a un propósito singular que es autenticar solicitudes. No es práctico almacenar la contraseña del usuario como la cadena original en la base de datos, pero es una buena práctica cifrar la contraseña y luego almacenarla en la base de datos.
+
+Proporciona también una capa de abstracción sobre el inicio de sesión con varios proveedores como Facebook, Google, Github, Twitter y más.
+
+Passport.js puede ser confuso al principio,pero cuando lo aprendes a manejar, verás que es muy fácil usarlo, incluso en aplicaciones que están estructuradas de distintos modos.
+
+Aquí hay un simple ejemplo de cómo podemos registrar un usuario usando Facebook:
+
+const passport = require('passport')
+const FacebookStrategy = require('passport-facebook').Strategy;
+
+passport.use(new FacebookStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET,
+    callbackURL: "http://www.example.com/auth/facebook/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate(..., function(err, user) {
+      if (err) { return done(err); }
+      done(null, user);
+    });
+  }
+));
+Es un poco confuso sí, pero lo que estamos haciendo es recoger las credenciales para dárselas a Facebook, mandarle la URL a la cual hará el fallback de registro y luego en la función lo que hacemos es registrar el usuario o buscar si ya está registrado e iniciar sesión.
+
+¿Interesante y corto cierto? Pues créeme que es muy fácil manejar Passport para hacer autenticación de usuarios, pero, ¿qué tal si unimos Passport con OpenID Connect para darle autorización a los usuarios y darle más seguridad a nuestra aplicación?
+
+Pues aprende esto y mucho más en nuestro Curso de Autenticación con Passport.js y 🏃 para que tus aplicaciones sean seguras y no puedan robarte fácilmente datos de nuestros usuarios.
+

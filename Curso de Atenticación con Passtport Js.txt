@@ -1,0 +1,121 @@
+Este curso es un complemento de la Escuela de JavaScript una carrera en la cual realizaremos un proyecto llamado Platzi Video. 
+En este curso en específico nos dedicaremos a crear la capa de seguridad y autenticación.
+
+STACK DE  SEGURIDAD MODERNO
+ 
+Anteriormente las compañías se comunicaban mediante un intranet (intranet --> red privada que funciona dentro de las compañías)
+dentro de intranet exístian protocolos como SOAP,XAM, WE federation, protocolos que fueron desfasados cuando llegó la revolución mobile
+además tecnologías como html necesitaban herramientas mas avanzadas
+
+El auge de los microservicios y la necesidad de tener multiples clientes hicieron necesario la crearción de un nuevo stack 
+
+-------------------------Stack de seguridad moderno---------------------------
+Este nuevo stack se componen de 3 protocolos
+
+1. Json Web Tokens --> estandar de la industria abierta que nos permite comunicarnos entre dos clientes de manera mas segura
+2. OAuth 2.0 --> estándar de la industria que permite implementar Autorización 
+3. OpenID Connect --> capa de autenticación que funciona por encima de OpenAuth 2.0
+======================================================================================================================================================
+¿Qué es la autenticación y la autorización ?
+
+Autenticación: verifica las identidades de los usuarios, por diferentes métodos (algo que sabemos, algo que tenemos, algo que somos), verifica si el usuario existe y se en realidad es el
+las opciones mas comunes para hacer la autenticación es con el usuario y la contraseña
+
+Autorización: verifica los permisos que corresponden a cada identidad. (Acción de otorgar permisos de manera limitada a nuestro recursos)
+============================================================================================================================================================
+INTRODUCCIÓN A LAS SESIONES 
+
+http es un protocolo que no tiene estado, lo cual quiere decir que diferentes peticiones http no comparten informacion entre si, asi que la manera de compartir esta informacion entre peticiones es por medio de una sesion
+
+Cuando visitamos un sitio por primera vez se crea una (petición http) sesión con los ajustes que se configuran (no es necesario ser autenticado para que esta sesion sea creada). Por ejemplo, en un sitio web de reserva de hoteles, a medida que buscamos y ponemos preferencias de precios y demás, 
+éstas se irán guardando en dicha sesión. Y luego estos datos se convertirán en un ID que será almacenado en una cookie en tu navegador.
+
+cookie --> archivo que se almacena en el navegador para que cuando se cierre el navegador la informacion de la sesion permanezca, para que el dia en que se vuelva a abrir la sesión la información de la sesión pasada se relacione
+con la información de la nueva sesión, esto ayuda con el tema de las preferencias 
+
+Cuando hay un proceso de autenticación la sesión y la información se almacenan directamente con el usuario
+
+Por seguridad la sesión pasado un tiempo de inactividad debería de cerrarse, pero dependiendo de las configuraciones esta puede durar abierta incluso hasta meses
+
+cookie sesion y express sesion son librerias que nos permiten implementar todo el tema de sesiones en express
+
+cookie sesion --> nos permite almacenar la sesion en la cookie
+
+express sesion --> nos permite almacenar la sesion en memoria en el lado del servidor
+
+Json web tokens no posee estado y por ende no necesita memoria
+
+=======================================================================================================================================
+ANATOMÍA DE UN JSON WEB TOKEN (JWT)
+
+JWT es un estándar de la industria que nos permite manejar demandas de información entre dos clientes de manera segura
+
+Un JWT consta de 3 partes generalmente divididas por un punto
+
+1.  header --> posee 2 atributos (tipo = "JWT" y el algoritmo de encriptacion de la firma)
+    el algoritmo de la firma puede ser sincrono(usan la misma llave para encriptar y desencriptar) y asincrono 
+    (estos ultimos usan 2 llaves de encriptacion una publica(usada para encriptar) y una privada (usada para desencriptar))
+
+    Los algoritmos asincronos deben usarse donde partes publicas puedan tener acceso a la llave
+    Los algoritmos sincronos solo deben usarse en sistemas como en el backend
+
+2.  payload --> es donde guardamos la informacion del usuario
+    El payload se componen de claims, los cuales son representado por 3 letras para mantener el JWT muy pequeño
+
+    Registered Claim Names --> ya tiene una definición propia y deben respetarse
+    Public Claim Names --> pueden usarse entre diferentes aplicaciones y ya estan definidos 
+    PrivateClaim Names --> los definimos nosotros para la aplicacion
+
+3.  signature --> esta compuesto del header y del payload ambas partes codificadas
+
+========================================================================================================
+Autenticación tradicional vs JWT
+
+Cuando usamos una autenticación tradicional se crea una sesión y el ID de esa sesión se almacena en una cookie del navegador, 
+pero cuando utilizamos JWT firmamos un token y este se guarda en el navegador el cual permite a una SPA actualizarse sin refrescar la ventana.
+
+
+Autenticación tradicional -->   se crea una sesion y el id se guarda en las cookies,
+problemas:
+por definición la rest API no deberia tener estado pero con la sesion estamos generando estado
+es poco escalable 
+el control de acceso siempre requiere que vayamos a base de datos, 
+el alto consumo de memoria, ya que cada cliente que ingrese genera mas consumo de memoria
+
+Autenticación con JWT --> se firma un token, este es enviado al cliente y debe ser almacenado en memoria o una cookie, todos los request llevan este token, 
+
+ventajas: 
+es que la single page APpm ya no se requiere del backend para saber si el usuario esta autenticado, se pueden recibir varios requeste con el token pero lo unico que interesa es saber
+si esta bien firmado
+========================================================================================================================================================================================
+FIRMANDO Y VERIFICANDO NUESTRO JWT
+
+Para firmar nuestro token utilizaremos un paquete de node llamado jsonwebtoken y al usarlo en nuestro código se verá de esta manera:
+
+jwt.sign({ sub: user.id }, 'secret', options);
+
+El primer atributo que recibe es el payload o sea los datos que guardaremos en ese token. 
+
+un payload esta compuesto por un conjunto de claims que definamos 
+Cada claim es un fragmento de información sobre el usuario, como pueden ser, nombre de usuario, correo electrónico, rol, localidad a la que pertenece, etc. La forma más sencilla de crear un Claim es proporcionando un tipo y un valor en el constructor del Claim
+
+De segundo atributo recibe una clave secreta con la cual será firmado y finalmente podremos pasarle opciones si es nuestro caso.
+
+Para verificar nuestro token usamos la misma libreria y lo haremos de la siguiente manera:
+
+jwt.verify(token, 'secret', function(err, decoded){});
+
+Como primer atributo recibiremos el token que queremos verificar
+Como segundo atributo el secreto (secret) de la firma 
+como tercer argumento (opcional) recibe un callback que devolverá el JWT decodificado. 
+
+primero crearemos una carpeta llamada jwt-utilities, luego desde la consola accedemos a ese directorio
+e inicializamos npm para que se nos cree el pacakege.json
+
+Luego detro de jwt-utilities creamos el archivo index.js 
+
+Luego nos vamos a la consola a intalar nuestra dependecia de jsonwebtoken (npm install jsonwebtoken)
+Una vez instalas nuestra dependencia podemos pasar trabajar al archivo indexx.js
+
+
+
