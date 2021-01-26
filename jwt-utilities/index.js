@@ -5,7 +5,7 @@ const jwt = require('jsonwebtoken');
 /*
 Nuestros argumentos los sacaremos de la terminal para lo cual haremos uso de process.arg
 process.argv --> lee los comandos de la terminal 
-
+process.argv nos devuelve un array de todos los argumentos ingresados por la consola, es por eso que lo está de-estructurando para obtener las variables importantes para este ejercicio.
 
 */
 //los procesos que no estamos leyendo desde la terminal serán el proceso de node y el archivo que estamos leyenndo
